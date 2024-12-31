@@ -1,0 +1,37 @@
+HKCR
+{
+	NoRemove CLSID
+	{
+		ForceRemove {478bf4c5-4918-49e4-8686-e5023d266eee} = s 'VoiceEnumerator class'
+		{
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Both'
+			}
+			TypeLib = s '{7c28a18e-4f5e-44eb-a64c-afdc298c2a89}'
+			Version = s '1.0'
+		}
+	}
+}
+HKLM
+{
+	NoRemove SOFTWARE
+	{
+		NoRemove Microsoft
+		{
+			NoRemove Speech
+			{
+				NoRemove Voices
+				{
+					NoRemove TokenEnums
+					{
+						ForceRemove TestTTSEngineEnumerator
+						{
+							val CLSID = s '{478bf4c5-4918-49e4-8686-e5023d266eee}'
+						}
+					}
+				}
+			}
+		}
+	}
+}

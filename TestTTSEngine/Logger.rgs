@@ -1,0 +1,26 @@
+HKCR
+{
+	TestTTSEngine.Logger.1 = s 'Logger class'
+	{
+		CLSID = s '{45aed94e-b97d-45ad-87a4-724b30fe69e1}'
+	}
+	TestTTSEngine.Logger = s 'Logger class'
+	{		
+		CurVer = s 'TestTTSEngine.Logger.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {45aed94e-b97d-45ad-87a4-724b30fe69e1} = s 'Logger class'
+		{
+			ProgID = s 'TestTTSEngine.Logger.1'
+			VersionIndependentProgID = s 'TestTTSEngine.Logger'
+			ForceRemove Programmable
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Both'
+			}
+			TypeLib = s '{7c28a18e-4f5e-44eb-a64c-afdc298c2a89}'
+			Version = s '1.0'
+		}
+	}
+}

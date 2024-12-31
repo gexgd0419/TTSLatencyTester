@@ -1,0 +1,103 @@
+﻿// TestTTSEngine.idl: TestTTSEngine 的 IDL 源
+//
+
+// 此文件将由 MIDL 工具处理以
+// 生成类型库(TestTTSEngine.tlb)和封送处理代码。
+
+import "oaidl.idl";
+import "ocidl.idl";
+import "sapiddk.idl";
+
+[
+	object,
+	uuid(10f878b1-d659-4e54-b4ea-dae07d2cffba),
+	dual,
+	nonextensible,
+	pointer_default(unique)
+]
+interface ILogItem : IDispatch
+{
+	[propget, id(1)] HRESULT ElapsedSeconds([out, retval] DOUBLE* pVal);
+	[propget, id(2)] HRESULT Message([out, retval] BSTR* pVal);
+};
+[
+	object,
+	uuid(6700fdde-8ace-4a61-99ed-2a32738b43cd),
+	dual,
+	nonextensible,
+	pointer_default(unique)
+]
+interface ILogItems : IDispatch
+{
+	[id(DISPID_NEWENUM), propget]
+	HRESULT _NewEnum([out, retval] IUnknown** ppUnk);
+
+	[id(DISPID_VALUE), propget]
+	HRESULT Item([in] long Index, [out, retval] ILogItem** ppItem);
+
+	[id(1), propget]
+	HRESULT Count([out, retval] long* pCount);
+};
+[
+	object,
+	uuid(f6859cd7-f2bc-4597-8981-e56c1266db62),
+	dual,
+	nonextensible,
+	pointer_default(unique)
+]
+interface ILogger : IDispatch
+{
+	[id(1)] HRESULT LogStart();
+	[id(2)] HRESULT LogStep([in] BSTR logMessage);
+	[id(3), hidden] HRESULT LogStepC([in] LPCWSTR logMessage);
+	[id(4)] HRESULT LogEnd();
+	[id(5)] HRESULT GetLogItems([out, retval] ILogItems** ppItems);
+};
+[
+	uuid(7c28a18e-4f5e-44eb-a64c-afdc298c2a89),
+	version(1.0),
+]
+library TestTTSEngineLib
+{
+	importlib("stdole2.tlb");
+	[
+		uuid(66e60648-139d-4916-96cb-a492ea4513d9)
+	]
+	coclass TTSEngine
+	{
+		[default] interface ISpTTSEngine;
+		interface ISpObjectWithToken;
+	};
+	[
+		uuid(478bf4c5-4918-49e4-8686-e5023d266eee)
+	]
+	coclass VoiceEnumerator
+	{
+		[default] interface IEnumSpObjectTokens;
+	};
+	[
+		uuid(45aed94e-b97d-45ad-87a4-724b30fe69e1)
+	]
+	coclass Logger
+	{
+		[default] interface ILogger;
+	};
+	[
+		uuid(74b45f12-fc01-4744-b55b-6d3b8f4b21a8),
+		noncreatable
+	]
+	coclass LogItem
+	{
+		[default] interface ILogItem;
+	};
+	[
+		uuid(f9c247fc-6045-497c-96dc-e5cc08729471),
+		noncreatable
+	]
+	coclass LogItems
+	{
+		[default] interface ILogItems;
+	};
+};
+
+import "shobjidl.idl";

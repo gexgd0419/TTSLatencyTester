@@ -117,7 +117,7 @@ static void OutputLogs()
         if (file)
         {
             file.close();
-            std::wcout << L"Log CSV file stored: " << filename << L'\n\n';
+            std::wcout << L"Log CSV file stored: " << filename << L"\n\n";
         }
         else
         {

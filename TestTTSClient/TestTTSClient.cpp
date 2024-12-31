@@ -334,8 +334,9 @@ static void MainLoop()
         << L"TTS Latency Test Client\n\n"
         << L"1. Select another voice\n"
         << L"2. Store timestamp logs to CSV files (currently " << std::boolalpha << outputCSVFile << L")\n"
-        << L"3. Test: Speak synchronously to default audio device\n"
-        << L"4. Test: Speak synchronously to custom memory stream\n"
+        << L"3. Change rate\n"
+        << L"4. Test: Speak synchronously to default audio device\n"
+        << L"5. Test: Speak synchronously to custom memory stream\n"
         << L"0. Quit\n\n"
         << L"Enter a number: ";
     UINT i;
@@ -352,9 +353,17 @@ static void MainLoop()
         outputCSVFile = !outputCSVFile;
         break;
     case 3:
+    {
+        int rate;
+        std::wcout << L"Enter new rate: ";
+        std::wcin >> rate;
+        CheckHr(spVoice->SetRate(rate));
+        break;
+    }
+    case 4:
         TestSyncSpeak();
         break;
-    case 4:
+    case 5:
         TestSyncSpeakStream();
         break;
     }

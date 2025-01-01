@@ -26,6 +26,17 @@ constexpr SampleType GetThreshold()
         return SampleType();
 }
 
+static WORD GetFormatTag(const WAVEFORMATEX* wfx)
+{
+    if (wfx->wFormatTag == WAVE_FORMAT_EXTENSIBLE)
+    {
+        auto wfext = reinterpret_cast<const WAVEFORMATEXTENSIBLE*>(wfx);
+        if (IS_VALID_WAVEFORMATEX_GUID(&wfext->SubFormat))
+            return EXTRACT_WAVEFORMATEX_ID(&wfext->SubFormat);
+    }
+    return wfx->wFormatTag;
+}
+
 // Returns the leading silence wave data length, in bytes
 template <typename SampleType, size_t bytesPerSample = sizeof(SampleType)>
 size_t GetLeadingSilenceLengthMono(const BYTE* waveData, size_t length)
@@ -87,7 +98,7 @@ size_t GetTrailingSilenceLengthMono(const BYTE* waveData, size_t length)
 static size_t GetLeadingSilenceLength(const WAVEFORMATEX* wfx, const BYTE* waveData, size_t length)
 {
     size_t len;
-    switch (wfx->wFormatTag)
+    switch (GetFormatTag(wfx))
     {
     case WAVE_FORMAT_PCM:
         switch (wfx->wBitsPerSample)
@@ -131,7 +142,7 @@ static size_t GetLeadingSilenceLength(const WAVEFORMATEX* wfx, const BYTE* waveD
 static size_t GetTrailingSilenceLength(const WAVEFORMATEX* wfx, const BYTE* waveData, size_t length)
 {
     size_t len;
-    switch (wfx->wFormatTag)
+    switch (GetFormatTag(wfx))
     {
     case WAVE_FORMAT_PCM:
         switch (wfx->wBitsPerSample)

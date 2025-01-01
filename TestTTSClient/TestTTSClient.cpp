@@ -134,18 +134,18 @@ public:
         if (riid == IID_ISpNotifySink || riid == IID_IUnknown)
         {
             *ppvObject = this;
-            ++m_ref;
+            InterlockedIncrement(&m_ref);
             return S_OK;
         }
         return E_NOINTERFACE;
     }
     ULONG STDMETHODCALLTYPE AddRef()
     {
-        return ++m_ref;
+        return InterlockedIncrement(&m_ref);
     }
     ULONG STDMETHODCALLTYPE Release()
     {
-        if (--m_ref == 0)
+        if (InterlockedDecrement(&m_ref) == 0)
         {
             delete this;
             return 0;
@@ -201,18 +201,18 @@ public:
         if (riid == IID_IStream || riid == IID_ISequentialStream || riid == IID_IUnknown)
         {
             *ppvObject = this;
-            ++m_ref;
+            InterlockedIncrement(&m_ref);
             return S_OK;
         }
         return E_NOINTERFACE;
     }
     ULONG STDMETHODCALLTYPE AddRef()
     {
-        return ++m_ref;
+        return InterlockedIncrement(&m_ref);
     }
     ULONG STDMETHODCALLTYPE Release()
     {
-        if (--m_ref == 0)
+        if (InterlockedDecrement(&m_ref) == 0)
         {
             delete this;
             return 0;

@@ -19,7 +19,7 @@ using ATL::CComPtr;
 static CComPtr<ISpVoice> spVoice;
 static CComPtr<ILogger> logger;
 static CComPtr<ISpObjectToken> voiceToken;
-static bool outputCSVFile = false;
+bool g_outputCSVFile = false;
 
 static inline void CheckHr(HRESULT hr)
 {
@@ -82,7 +82,7 @@ static void OutputLogs()
         << std::setw(10) << L"Total/ms"
         << std::setw(10) << L"Delta/ms"
         << L" Step\n";
-    if (outputCSVFile)
+    if (g_outputCSVFile)
     {
         filename = L"TTSLog_" + std::to_wstring(time(nullptr)) + L".csv";
         file.open(filename, std::ios::out | std::ios::trunc);
@@ -102,7 +102,7 @@ static void OutputLogs()
             << std::setw(10) << ms
             << std::setw(10) << (ms - last_ms)
             << L' ' << (LPCWSTR)msg << L'\n';
-        if (outputCSVFile)
+        if (g_outputCSVFile)
         {
             file
                 << std::fixed << std::setprecision(2)
@@ -112,7 +112,7 @@ static void OutputLogs()
         last_ms = ms;
     }
     std::wcout << L"----------- Log end -----------\n";
-    if (outputCSVFile)
+    if (g_outputCSVFile)
     {
         if (file)
         {
@@ -179,6 +179,11 @@ CComPtr<ISpNotifySink> notifySink(new EventSink);
 
 static void TestSyncSpeak()
 {
+    if (!voiceToken)
+    {
+        std::wcout << L"You should select a voice first.\n\n";
+        return;
+    }
     std::wcout << L"Performing tests...\n";
     logger->LogStart();
     LoadVoice();
@@ -287,6 +292,11 @@ private:
 
 static void TestSyncSpeakStream()
 {
+    if (!voiceToken)
+    {
+        std::wcout << L"You should select a voice first.\n\n";
+        return;
+    }
     std::wcout << L"Performing tests...\n";
     GUID fmtguid;
     CSpCoTaskMemPtr<WAVEFORMATEX> wfx;
@@ -324,23 +334,25 @@ static void Init()
     const auto events = SPFEI(SPEI_START_INPUT_STREAM) | SPFEI(SPEI_END_INPUT_STREAM);
     CheckHr(spVoice->SetInterest(events, events));
     CheckHr(spVoice->SetNotifySink(notifySink));
-
-    SelectVoice();
 }
+
+void DetectKeypressLatency();
 
 static void MainLoop()
 {
-    std::wcout
-        << L"TTS Latency Test Client\n\n"
-        << L"1. Select another voice\n"
-        << L"2. Store timestamp logs to CSV files (currently " << std::boolalpha << outputCSVFile << L")\n"
-        << L"3. Change rate\n"
-        << L"4. Test: Speak synchronously to default audio device\n"
-        << L"5. Test: Speak synchronously to custom memory stream\n"
-        << L"0. Quit\n\n"
-        << L"Enter a number: ";
+    std::wcout <<
+        L"TTS Latency Test Client\n\n"
+        L"1. Select a voice\n"
+        L"2. Store timestamp logs to CSV files (currently " << std::boolalpha << g_outputCSVFile << L")\n"
+        L"3. Change rate\n"
+        L"4. Test: Speak synchronously to default audio device\n"
+        L"5. Test: Speak synchronously to custom memory stream\n"
+        L"6. Detect keypress to audio latency\n"
+        L"0. Quit\n\n"
+        L"Enter a number: ";
     UINT i;
     std::wcin >> i;
+    std::wcout << L'\n';
     switch (i)
     {
     case 0:
@@ -350,7 +362,7 @@ static void MainLoop()
         SelectVoice();
         break;
     case 2:
-        outputCSVFile = !outputCSVFile;
+        g_outputCSVFile = !g_outputCSVFile;
         break;
     case 3:
     {
@@ -365,6 +377,9 @@ static void MainLoop()
         break;
     case 5:
         TestSyncSpeakStream();
+        break;
+    case 6:
+        DetectKeypressLatency();
         break;
     }
 }
